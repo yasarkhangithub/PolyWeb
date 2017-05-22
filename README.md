@@ -13,7 +13,19 @@ There are three different types of datasets used for PolyWeb evaluation experime
 These datasets can be downloaded from [PolyWeb Datasets](https://goo.gl/TkoObW).
 
 ### Settings
-Each RDF dataset was loaded into a different Virtuoso (Open Source v.7.2.4.2) SPARQL endpoint SPARQL endpoint on separate physical machines. Relational data set is loaded into MySQL database and CSV dataset into Apache Drill. All experiments are carried out on a local network, so that network cost remains negligible. The machines used for experiments have a 2.60 GHz Core i7 processor, 8 GB of RAM and 500 GB hard disk running a 64-bit Windows 7 OS. The database configuration parameters are used as default configuration for MySQL database. Default configurations are also used for Apache Drill.
+Each RDF dataset was loaded into a different Virtuoso (Open Source v.7.2.4.2) SPARQL endpoint SPARQL endpoint on separate physical machines. Relational data set is loaded into MySQL database (version 5.7.14) and CSV dataset into Apache Drill (version 1.8.0). All experiments are carried out on a local network, so that network cost remains negligible. The machines used for experiments have a 2.60 GHz Core i7 processor, 8 GB of RAM and 500 GB hard disk running a 64-bit Windows 7 OS. The database configuration parameters are used as default configuration for MySQL database. Default configurations are also used for Apache Drill. The configuration parameters are listed in Table 1 below.
+
+**Table 1:** Datasets Configuration
+
+| Dataset       | Port           | URL  | Config Parameters  |
+| ------------- |-------------| -----| -----|
+| COSMIC-CNV      | 8899 | {System-IP}:8899/sparql | NoB=680000, MDF=500000, MQM=8G |
+| TCGA-OV-CNV      | 8085      |   jdbc:mysql://{System-IP}:8085/tcga_ov_cnv | Default configuration |
+| CNVD-CNV | 8047      |    {System-IP}:8047/query.json | Default configuration |
+
+- *NoB = NumberOfBuffers*
+- *MDF = MaxDirtyBuffers*
+- *MQM = MaxQueryMem*
 
 ### Queries
 A total of 10 queries are designed to evaluate and compare the query federation performance of PolyWeb against FedX and HiBISCuS based on the metrics defined.
