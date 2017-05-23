@@ -1,0 +1,11 @@
+PREFIX gs: <http://sels.insight.org/cancer-genomics/schema/>
+
+SELECT ?cnv ?start ?end
+
+WHERE { 
+	?cnv gs:chr <http://sels.insight.org/cancer-genomics/chrom/8> .
+	?cnv gs:gene <http://sels.insight.org/cancer-genomics/gene/ADAM3A> .
+	?cnv gs:start ?start .
+	?cnv gs:end ?end .
+	?cnv gs:mutation_type "loss" .
+}

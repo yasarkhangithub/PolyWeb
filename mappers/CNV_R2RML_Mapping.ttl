@@ -1,0 +1,62 @@
+@base <http://polystorefed.insight.org#>.
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix genome: <http://sels.insight.org/cancer-genomics/schema/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+<#TriplesMap1>
+	a rr:TriplesMap;
+    rr:logicalTable [ rr:tableName "cnv_ov" ];
+    rr:subjectMap [
+        rr:template "http://sels.insight.org/cancer-genomics/cnv/{Start}-{End}";
+        rr:class genome:CNV;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate genome:start;
+        rr:objectMap [ rr:column "Start" ];
+	];
+	rr:predicateObjectMap [
+        rr:predicate genome:end;
+        rr:objectMap [ rr:column "End" ];
+	];
+	rr:predicateObjectMap [
+        rr:predicate genome:segment_mean;
+        rr:objectMap [ rr:column "Segment_Mean" ];
+	];
+	rr:predicateObjectMap [
+        rr:predicate genome:chr;
+        rr:objectMap [ 
+        	rr:column "Chromosome";
+        	rr:template "http://sels.insight.org/cancer-genomics/chrom/{Chromosome}";
+		];
+    ];
+	rr:predicateObjectMap [
+        rr:predicate genome:sample;
+        rr:objectMap [ 
+        	rr:column "Sample";
+        	rr:template "http://sels.insight.org/cancer-genomics/sample/{Sample}";
+		];
+    ].
+
+<#TriplesMap2>
+	a rr:TriplesMap;
+    rr:logicalTable [ rr:tableName "cnv_ov" ];
+    rr:subjectMap [
+        rr:template "http://sels.insight.org/cancer-genomics/chrom/{Chromosome}";
+        rr:class genome:Chromosome;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rdfs:label;
+        rr:objectMap [ rr:column "Chromosome" ];
+    ].
+	
+<#TriplesMap3>
+	a rr:TriplesMap;
+    rr:logicalTable [ rr:tableName "cnv_ov" ];
+    rr:subjectMap [
+        rr:template "http://sels.insight.org/cancer-genomics/sample/{Sample}";
+        rr:class genome:Sample;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate genome:sample_name;
+        rr:objectMap [ rr:column "Sample" ];
+    ].

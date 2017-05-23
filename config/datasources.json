@@ -1,0 +1,32 @@
+{
+	"DataSource-1": {
+		"id": 1,
+		"type": "RDF",
+		"url": "http://datasrv01.deri.ie:8899/sparql",
+		"username": "",
+		"password": "",
+		"dirPath": "",
+		"mapperPath": "",
+		"defaultGraphs": "http://sels.insight.org/cancer-genomics/graph/cnv/cosmic"
+	},
+	"DataSource-2": {
+		"id": 2,
+		"type": "RDB",
+		"url": "jdbc:mysql://datasrv01.deri.ie:8085/tcga_ov_cnv",
+		"username": "yaskha",
+		"password": "mysql",
+		"dirPath": "",
+		"mapperPath": "mappers/CNV_R2RML_Mapping.ttl",
+		"defaultGraphs": ""
+	},
+	"DataSource-3": {
+		"id": 3,
+		"type": "CSV",
+		"url": "http://datasrv01.deri.ie:8047/query.json",
+		"username": "",
+		"password": "",
+		"dirPath": "/home/yaskha/Genomics/Polystore/Data/CNV/CNVD/Raw-Data/Homo_Sapiens/",
+		"mapperPath": "mappers/CNV_RML_CSV_Map.ttl",
+		"defaultGraphs": ""
+	}
+}

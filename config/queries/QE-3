@@ -1,0 +1,14 @@
+PREFIX gs: <http://sels.insight.org/cancer-genomics/schema/>
+
+SELECT ?cnv ?start ?end ?seg_mean
+
+WHERE { 
+	?cnv gs:chr ?chr .
+	?cnv gs:gene <http://sels.insight.org/cancer-genomics/gene/ADAM5P>.
+	?cnv gs:start ?start .
+	?cnv gs:end ?end .
+	?cnv gs:segment_mean ?seg_mean .
+	
+	Filter (?seg_mean > 0.5)
+	
+}

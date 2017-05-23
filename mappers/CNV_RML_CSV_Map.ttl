@@ -1,0 +1,94 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix genome: <http://sels.insight.org/cancer-genomics/schema/>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+<#TriplesMap1>
+  a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source "/home/yaskha/Genomics/Polystore/Data/CNV/CNVD/Raw-Data/Homo_Sapiens/" ;
+    rml:referenceFormulation ql:CSV 
+  ];
+  
+  rr:subjectMap [
+    rr:template "http://sels.insight.org/cancer-genomics/cnv/{Start_Position}-{End_Position}";
+    rr:class genome:CNV 
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate genome:specie;
+    rr:objectMap [
+      rml:reference "Specie"
+      ]
+    ];
+  
+  rr:predicateObjectMap [
+    rr:predicate genome:start;
+    rr:objectMap [
+      rml:reference "Start_Position";
+      rr:datatype xsd:int
+      ]
+    ];
+
+  rr:predicateObjectMap [
+    rr:predicate genome:end;
+    rr:objectMap [
+      rml:reference "End_Position";
+      rr:datatype xsd:int
+    ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate genome:chromosome_region;
+    rr:objectMap [
+      rml:reference "Chromosome_Region"
+    ]
+   ];
+    
+   rr:predicateObjectMap [
+    rr:predicate genome:mutation_type;
+    rr:objectMap [
+      rml:reference "Mutation"
+    ]
+   ];
+   
+   rr:predicateObjectMap [
+    rr:predicate genome:chr;
+    rr:objectMap [ 
+    rml:reference "Chromosome";
+    rr:template "http://sels.insight.org/cancer-genomics/chrom/{Chromosome}";
+	]
+   ];
+   
+   rr:predicateObjectMap [
+    rr:predicate genome:gene;
+    rr:objectMap [ 
+    rml:reference "Gene";
+    rr:template "http://sels.insight.org/cancer-genomics/gene/{Gene}";
+	]
+   ];
+   
+   rr:predicateObjectMap [
+    rr:predicate genome:disease;
+    rr:objectMap [ 
+    rml:reference "Disease";
+    rr:template "http://sels.insight.org/cancer-genomics/primary_site/{Disease}";
+	]
+   ].
+   
+   <#TriplesMap2>
+	a rr:TriplesMap;
+    rml:logicalSource [
+    rml:source "/home/yaskha/Genomics/Polystore/Data/CNV/CNVD/" ;
+    rml:referenceFormulation ql:CSV 
+  	];
+    rr:subjectMap [
+        rr:template "http://sels.insight.org/cancer-genomics/chrom/{Chromosome}";
+        rr:class genome:Chromosome;
+    ];
+    rr:predicateObjectMap [
+        rr:predicate rdfs:label;
+        rr:objectMap [ rml:reference "Chromosome" ];
+    ].

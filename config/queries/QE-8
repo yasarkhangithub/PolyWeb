@@ -1,0 +1,8 @@
+PREFIX gs: <http://sels.insight.org/cancer-genomics/schema/>
+
+SELECT ?cnv ?disease
+
+WHERE { 
+	?cnv gs:gene <http://sels.insight.org/cancer-genomics/gene/BRCA2> .
+	?cnv gs:disease ?disease.
+}
