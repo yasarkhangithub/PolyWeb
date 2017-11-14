@@ -1,6 +1,6 @@
 package org.insight.sels.result;
 
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 
 /**
  * 
@@ -13,6 +13,6 @@ public interface ResultSetWrapper {
 	
 	public void setResultSet(Object resultSet);
 	
-	public void setSubQuery(TPGroup subQuery);
+	public void setSubQuery(EExclusiveGroup subQuery);
 	
 }

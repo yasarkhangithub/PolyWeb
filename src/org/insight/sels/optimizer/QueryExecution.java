@@ -15,7 +15,7 @@ import org.apache.jena.graph.Triple;
 import org.insight.sels.config.Config;
 import org.insight.sels.datasources.DataSource;
 import org.insight.sels.query.SubQuery;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.queryservice.QueryService;
 import org.insight.sels.queryservice.QueryServiceFactory;
 import org.insight.sels.result.PolyQuerySolution;

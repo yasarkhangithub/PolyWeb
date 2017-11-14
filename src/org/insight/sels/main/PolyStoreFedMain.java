@@ -26,27 +26,23 @@ public class PolyStoreFedMain {
 		try {
 			Config config = Config.getInstance();
 			config.initialize();
-			
+//			
 			SPARQLQuery sparqlQuery = config.getSparqlQuery();
 			
 			QueryExecution qExec = new QueryExecution();
 			PolyResultSet rs = qExec.executeQuery(sparqlQuery);
 			
-			QueryExecutionStats qeStats = Config.getInstance().getQueryExecStats();
-			
-//			if(rs != null)
-//				rs.next();
-//			
+			QueryExecutionStats qeStats = Config.getInstance().getQueryExecStats();			
 			
 			
 			while(rs.hasNext()) {
 				rs.next();
 				qeStats.incrementResultCount();
 			}
-			
-			
-//			printResultSet(rs);
-			
+//			
+//			
+////			printResultSet(rs);
+//			
 			qeStats.printStats();
 			
 		} catch (SQLException e) {

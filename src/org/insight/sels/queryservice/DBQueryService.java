@@ -18,7 +18,7 @@ import org.insight.sels.datasources.DataSource;
 import org.insight.sels.query.QueryVar;
 import org.insight.sels.query.SQLQuery;
 import org.insight.sels.query.SubQuery;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.querywriter.SPARQLToSQLWriter;
 import org.insight.sels.querywriter.URITemplate;
 import org.insight.sels.result.PolyQuerySolution;
@@ -35,13 +35,13 @@ public class DBQueryService implements QueryService {
 
 	private DataSource rdbDataSource;
 	private Connection dbConn;
-	private TPGroup subQuery;
+	private EExclusiveGroup subQuery;
 	private List<String> mainQueryProjList = new ArrayList<String>();
 	private List<String> dbProjectionList = new ArrayList<String>();
 	
 	
 	@Override
-	public PolyResultSet executeQuery(TPGroup subQuery, DataSource datasource) {
+	public PolyResultSet executeQuery(EExclusiveGroup subQuery, DataSource datasource) {
 		
 		this.rdbDataSource = datasource;
 		this.subQuery = subQuery;

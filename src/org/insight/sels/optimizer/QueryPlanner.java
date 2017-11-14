@@ -12,7 +12,7 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.insight.sels.config.Config;
 import org.insight.sels.datasources.DataSource;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.sels.insight.schema.SPARQLQuery;
 
 /**
@@ -28,16 +28,16 @@ public class QueryPlanner<T> {
 
 	public void createPlan(Map<Triple, List<DataSource>> tripleToDataSourceMap) {
 
-		List<TPGroup> tpGroupList = createTPGroups(tripleToDataSourceMap);
+		List<EExclusiveGroup> tpGroupList = buildEExclusiveGroups(tripleToDataSourceMap);
 
 		for (int count = 0; count < tpGroupList.size(); count++) {
 
-			TPGroup tpGroup1 = tpGroupList.get(count);
+			EExclusiveGroup tpGroup1 = tpGroupList.get(count);
 			Set<Triple> tripleSet1 = new HashSet<Triple>(tpGroup1.getTpList());
 
 			for (int k = count + 1; k < tpGroupList.size(); k++) {
 
-				TPGroup tpGroup2 = tpGroupList.get(k);
+				EExclusiveGroup tpGroup2 = tpGroupList.get(k);
 				Set<Triple> tripleSet2 = new HashSet<Triple>(tpGroup2.getTpList());
 
 				List<String> joinVar = new ArrayList<String>();
@@ -161,44 +161,60 @@ public class QueryPlanner<T> {
 	}
 
 	/**
+	 * This method builds extended exclusive groups of triple patterns.
 	 * 
 	 * @param tripleToDataSourceMap
 	 * @return
 	 */
-	public List<TPGroup> createTPGroups(Map<Triple, List<DataSource>> tripleToDataSourceMap) {
+	public List<EExclusiveGroup> buildEExclusiveGroups(Map<Triple, List<DataSource>> tripleToDataSourceMap) {
+		
 		List<String> groupIDList = new ArrayList<String>();
-		Map<String, TPGroup> tpGroupMap = new HashMap<String, TPGroup>();
+		Map<String, EExclusiveGroup> eEGroupMap = new HashMap<String, EExclusiveGroup>();
 
 		Set<Triple> tripleSet = tripleToDataSourceMap.keySet();
 		int groupCount = 1;
+		int nullCount = 1;
 		for (Triple triple : tripleSet) {
 			
 			List<DataSource> datasourceList = tripleToDataSourceMap.get(triple);
 			String groupID = "";
+			String predicate = triple.getPredicate().getURI();
+			boolean nullFlag = false;
 			for (DataSource dataSource : datasourceList) {
 				groupID += dataSource.getId();
+				if(dataSource.getNullPredicates().contains(predicate)) {
+					nullFlag = true;
+				}
 			}
-
-			if (groupIDList.contains(groupID)) {
-				TPGroup tpGroup = tpGroupMap.get(groupID);
-				tpGroup.getTpList().add(triple);
+			
+			if(nullFlag == true) {
+				EExclusiveGroup eEGroup = new EExclusiveGroup();
+				eEGroup.setGroupID(groupID + "-" + nullCount++);
+				eEGroup.setId(""+groupCount++);
+				eEGroup.setDatasourceList(datasourceList);
+				eEGroup.getTpList().add(triple);
+				eEGroupMap.put(groupID, eEGroup);
+				groupIDList.add(groupID);
+			} else if (groupIDList.contains(groupID)) {
+				EExclusiveGroup eEGroup = eEGroupMap.get(groupID);
+				eEGroup.getTpList().add(triple);
 			} else {
-				TPGroup tpGroup = new TPGroup();
-				tpGroup.setGroupID(groupID);
-				tpGroup.setId(""+groupCount++);
-				tpGroup.setDatasourceList(datasourceList);
-				tpGroup.getTpList().add(triple);
-				tpGroupMap.put(groupID, tpGroup);
+				EExclusiveGroup eEGroup = new EExclusiveGroup();
+				eEGroup.setGroupID(groupID);
+				eEGroup.setId(""+groupCount++);
+				eEGroup.setDatasourceList(datasourceList);
+				eEGroup.getTpList().add(triple);
+				eEGroupMap.put(groupID, eEGroup);
 				groupIDList.add(groupID);
 			}
 
 		}
 
-		List<TPGroup> tpGroupOptList = new ArrayList<TPGroup>();
+		List<EExclusiveGroup> tpGroupOptList = new ArrayList<EExclusiveGroup>();
 		SPARQLQuery sparqlQuery = Config.getInstance().getSparqlQuery();
 		List<String> mainQueryProjList = Config.getInstance().getSparqlQuery().getProjectionList();
 		for (String id : groupIDList) {
-			TPGroup tpGroup = tpGroupMap.get(id);
+			EExclusiveGroup tpGroup = eEGroupMap.get(id);
 			tpGroup.calculateCost();
 			tpGroup.addFilterExpr(sparqlQuery.getFilter());
 			tpGroup.setProjectionList(getTPGroupProjection(mainQueryProjList, tpGroup.getTpList()));
@@ -209,7 +225,7 @@ public class QueryPlanner<T> {
 
 //		System.out.println("\n\n --------------------------- \n\n");
 
-//		for (TPGroup tpGroup : tpGroupOptList) {
+//		for (EExclusiveGroup tpGroup : tpGroupOptList) {
 ////			System.out.println("ID: " + tpGroup.getId() + " === " + "Group ID: " + tpGroup.getGroupID() + " === " + "Cost: " + tpGroup.getCost());
 //			List<Triple> tpList = tpGroup.getTpList();
 //			for (Triple triple : tpList) {

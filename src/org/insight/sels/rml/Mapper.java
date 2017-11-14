@@ -17,7 +17,7 @@ public abstract class Mapper {
 	protected Map<String, String> predicateToColumnMap = new HashMap<String, String>();
 	protected Map<String, String> columnToSourceMap = new HashMap<String, String>();
 	protected Map<String, String> predicateToTemplateMap = new HashMap<String, String>();
-	Set<TripleMap> tripleMapSet = new HashSet<TripleMap>();
+	protected Set<TripleMap> tripleMapSet = new HashSet<TripleMap>();
 	
 	public abstract void populatePredMap();
 	
@@ -99,6 +99,14 @@ public abstract class Mapper {
 	
 	public void setPredicateToTemplateMap(Map<String, String> predicateToTemplateMap) {
 		this.predicateToTemplateMap = predicateToTemplateMap;
+	}
+
+	public Set<TripleMap> getTripleMapSet() {
+		return tripleMapSet;
+	}
+
+	public void setTripleMapSet(Set<TripleMap> tripleMapSet) {
+		this.tripleMapSet = tripleMapSet;
 	}
 
 }

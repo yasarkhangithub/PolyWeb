@@ -127,4 +127,72 @@ public class RDFDataSource extends DataSource {
 		return contains;
 	}
 
+	@Override
+	public void predicateNullCheck() {
+		
+		String queryString = "SELECT DISTINCT ?type WHERE { "
+				+ "?subject a ?type . "
+				+ "}";
+		
+		Query query = QueryFactory.create(queryString);
+		List<String> graphs = this.getDefaultGraphList();
+		for (String graph : graphs) {
+			query.addGraphURI(graph);
+		}
+		QueryExecution qExe = QueryExecutionFactory.sparqlService(this.getDataSourceURL(), query);	
+		ResultSet resultSet = qExe.execSelect();
+		
+		while(resultSet.hasNext()) {
+			QuerySolution qSol = resultSet.next();
+			Resource typeRes = qSol.get("type").asResource();
+			String typeURI = typeRes.getURI();
+			
+//			System.out.println("Type = " + typeURI);
+			
+			String queryStr = "SELECT DISTINCT ?predicate WHERE { "
+					+ " ?sub a  " + "<" + typeURI + "> . "
+					+ "?sub ?predicate ?object . "
+					+ "}";
+			
+//			System.out.println(queryStr);
+			
+			Query q = QueryFactory.create(queryStr);
+			for (String graph : graphs) {
+				q.addGraphURI(graph);
+			}
+			QueryExecution qe = QueryExecutionFactory.sparqlService(this.getDataSourceURL(), q);	
+			ResultSet rs = qe.execSelect();
+			
+			while(rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				Resource predRes = qs.get("predicate").asResource();
+				String predURI = predRes.getURI();
+				
+//				System.out.println("Predicate = " + predURI + "");
+				
+				String qStr = "SELECT DISTINCT ?sub WHERE { "
+						+ " ?sub a <" + typeURI + "> . "
+						+ "FILTER NOT EXISTS { ?sub <" + predURI +  "> ?value } . "
+						+ "} LIMIT 1 ";
+				
+//				System.out.println(qStr);
+				
+				Query q1 = QueryFactory.create(qStr);
+				for (String graph : graphs) {
+					q.addGraphURI(graph);
+				}
+				QueryExecution qe1 = QueryExecutionFactory.sparqlService(this.getDataSourceURL(), q1);	
+				ResultSet rs1 = qe1.execSelect();
+				
+				while(rs1.hasNext()) {
+//					System.err.println("Predicate " + predURI + " is a null predicate. ");
+					this.getNullPredicates().add(predURI);
+				}
+				
+			}
+			
+		}
+		
+	}
+
 }

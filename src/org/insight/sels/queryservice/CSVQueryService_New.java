@@ -21,7 +21,7 @@ import org.insight.sels.config.Config;
 import org.insight.sels.datasources.DataSource;
 import org.insight.sels.query.QueryVar;
 import org.insight.sels.query.SubQuery;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.querywriter.SPARQLToCSVQWriter;
 import org.insight.sels.querywriter.URITemplate;
 import org.insight.sels.result.CSVRSWrapper;
@@ -44,12 +44,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class CSVQueryService_New implements QueryService_New {
 	
 	private DataSource csvDataSource;
-	private TPGroup subQuery;
+	private EExclusiveGroup subQuery;
 	private List<String> projectionList = new ArrayList<String>();
 	private List<String> mainQueryProjList = new ArrayList<String>();
 
 	@Override
-	public ResultSetWrapper executeQuery(TPGroup subQuery, DataSource datasource) {
+	public ResultSetWrapper executeQuery(EExclusiveGroup subQuery, DataSource datasource) {
 		
 //		System.out.println(subQuery.getTpList().toString());
 		

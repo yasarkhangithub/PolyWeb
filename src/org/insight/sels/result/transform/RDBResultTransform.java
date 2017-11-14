@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.insight.sels.query.QueryVar;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.querywriter.URITemplate;
 import org.insight.sels.result.PolyQuerySolution;
 

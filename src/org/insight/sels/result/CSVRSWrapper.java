@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 import org.insight.sels.config.Config;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.result.transform.ResultTransform;
 import org.insight.sels.result.transform.ResultTransformFactory;
 
@@ -41,7 +41,7 @@ public class CSVRSWrapper implements ResultSetWrapper {
 	}
 
 	@Override
-	public void setSubQuery(TPGroup subQuery) {
+	public void setSubQuery(EExclusiveGroup subQuery) {
 		ResultTransformFactory rsTransfFactory = new ResultTransformFactory();
 		this.resultTransformer = rsTransfFactory.getResultTransform("CSV");
 		this.resultTransformer.setSubQuery(subQuery);

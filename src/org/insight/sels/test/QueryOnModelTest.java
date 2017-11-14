@@ -5,9 +5,11 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.resultset.ResultsFormat;
 
 
 /**
@@ -47,7 +49,7 @@ public class QueryOnModelTest {
 		try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
 		    ResultSet results = qexec.execSelect() ;
 
-		    ResultSetFormatter.out(System.out, results);
+		    ResultSetFormatter.output(results, ResultsFormat.FMT_RDF_TURTLE);
 		  }
 
 	}

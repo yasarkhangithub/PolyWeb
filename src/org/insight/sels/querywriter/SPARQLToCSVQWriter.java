@@ -1,6 +1,7 @@
 package org.insight.sels.querywriter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +11,13 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.Expr;
+import org.apache.jena.sparql.expr.ExprFunction;
 import org.apache.jena.sparql.expr.ExprList;
 import org.insight.sels.config.Config;
 import org.insight.sels.datasources.DataSource;
 import org.insight.sels.query.QueryVar;
 import org.insight.sels.query.SubQuery;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.rml.RMLMapper;
 import org.insight.sels.util.StringUtil;
 
@@ -26,11 +28,14 @@ import org.insight.sels.util.StringUtil;
  */
 public class SPARQLToCSVQWriter {
 	
+	String filterString = "";
+	Operators operators = null;
 	
-	public String rewriteQuery(TPGroup subQuery, DataSource datasource) {
+	public String rewriteQuery(EExclusiveGroup subQuery, DataSource datasource) {
 		
 		Config config = Config.getInstance();
 		List<String> mainQueryProjList = config.getSparqlQuery().getProjectionList();
+		operators = config.getOperators();
 
 		List<Triple> tripleList = subQuery.getTpList();
 		Map<String, QueryVar> varMap = new HashMap<String, QueryVar>();
@@ -255,29 +260,38 @@ public class SPARQLToCSVQWriter {
 			count++;
 		}
 		
+		
+		/**
+		 * Converting SPARQL Query Filters to CSV query Where Clause
+		 */
 		ExprList filterExprs = subQuery.getFilterExprList();
 		if(!filterExprs.isEmpty()) {
 			
 			for (Expr expr : filterExprs) {
-				Set<Var> exprVars = expr.getVarsMentioned();
-				String exprStr = expr.toString();
-				for (Var exprVar : exprVars) {
-					QueryVar qvar = varMap.get(exprVar.getName());
-					if(qvar != null) {
-						String altVar = qvar.getAlternateNameList().get(0);
-						exprStr = exprStr.replace(exprVar.toString(), altVar);
-//						exprStr = exprStr.replace("?start", "Start_Position");
-					}
-				}
 				
-				exprStr = exprStr.replace("||", "OR");
-				exprStr = exprStr.replace("&&", "AND");
-				exprStr = exprStr.replace("\"", "'");
+				ExprFunction expFunc = expr.getFunction();
+				processFilter(expFunc, varMap);
+				
+//				Set<Var> exprVars = expr.getVarsMentioned();
+//				String exprStr = expr.toString();
+//				for (Var exprVar : exprVars) {
+//					QueryVar qvar = varMap.get(exprVar.getName());
+//					if(qvar != null) {
+//						String altVar = qvar.getAlternateNameList().get(0);
+//						exprStr = exprStr.replace(exprVar.toString(), altVar);
+//					}
+//				}
+//				
+//				exprStr = exprStr.replace("||", "OR");
+//				exprStr = exprStr.replace("&&", "AND");
+//				exprStr = exprStr.replace("\"", "'");
 				
 				if(whereClause.isEmpty())
-					whereClause += " " + exprStr;
-				else
-					whereClause += " AND " + exprStr;
+					whereClause += " " + filterString;
+				else {
+					if(!filterString.isEmpty())
+						whereClause += " AND " + filterString;
+				}
 			}
 			
 //			System.out.println("CSV Where ============= " + whereClause);
@@ -291,6 +305,73 @@ public class SPARQLToCSVQWriter {
 		
 		
 		return query;
+		
+	}
+	
+	
+	
+	/**
+	 * This method transforms SPARQL Filter to CSV Query Where Clause
+	 * 
+	 * @param expFunc
+	 * @param varMap
+	 */
+	public void processFilter(ExprFunction expFunc, Map<String, QueryVar> varMap) {
+		
+		Set<String> queryVars = varMap.keySet();
+		
+		Expr arg1 = expFunc.getArg(1);
+		Expr arg2 = expFunc.getArg(2);
+		String op = expFunc.getOpName();
+		
+		if(!arg1.isFunction()) {
+			String expVar = arg1.toString();
+			String expValue = arg2.toString();
+			
+			if(queryVars.contains(expVar)) {
+				QueryVar qvar = varMap.get(expVar);
+				String altVar = qvar.getAlternateNameList().get(0);
+				filterString += "( " + altVar + " " + operators.getCSVOp(op) + " " + expValue.replaceAll("\"", "'") + " ) ";
+			}
+			
+		} else {
+			
+			Boolean operatorFlag = Boolean.FALSE;
+			
+			ExprFunction arg1Func = arg1.getFunction();
+			Set<String> arg1Vars = arg1Func.getVarNamesMentioned();
+			
+			if(!Collections.disjoint(arg1Vars, queryVars)) {
+				
+				filterString += "( ";
+				processFilter(arg1Func, varMap);
+				
+				operatorFlag = Boolean.TRUE;
+				
+			}
+			
+			ExprFunction arg2Func = arg2.getFunction();
+			Set<String> arg2Vars = arg2Func.getVarNamesMentioned();
+			
+			if(!Collections.disjoint(arg2Vars, queryVars)) {
+				
+				if(operatorFlag) {
+					filterString += " " + operators.getCSVOp(op) + " ";
+				} else {
+					filterString += ")";
+				}
+				
+				processFilter(arg2Func, varMap);
+				filterString += ")";
+			} else {
+				if(operatorFlag) {
+					filterString += ")";
+				}
+			}
+			
+			
+			
+		}
 		
 	}
 	

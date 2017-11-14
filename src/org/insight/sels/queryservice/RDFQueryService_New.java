@@ -25,7 +25,7 @@ import org.apache.jena.sparql.syntax.ElementTriplesBlock;
 import org.insight.sels.config.Config;
 import org.insight.sels.datasources.DataSource;
 import org.insight.sels.query.SubQuery;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.result.PolyQuerySolution;
 import org.insight.sels.result.PolyResultSet;
 import org.insight.sels.result.RDBRSWrapper;
@@ -40,11 +40,11 @@ import org.insight.sels.result.ResultSetWrapper;
 public class RDFQueryService_New implements QueryService_New {
 
 	private DataSource rdbDataSource;
-	private TPGroup subQuery;
+	private EExclusiveGroup subQuery;
 	private List<String> mainQueryProjList = new ArrayList<String>();
 	
 	@Override
-	public ResultSetWrapper executeQuery(TPGroup subQuery, DataSource datasource) {
+	public ResultSetWrapper executeQuery(EExclusiveGroup subQuery, DataSource datasource) {
 		
 		this.rdbDataSource = datasource;
 		this.subQuery = subQuery;

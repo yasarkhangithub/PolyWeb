@@ -22,7 +22,7 @@ import org.insight.sels.datasources.DataSource;
  * @author Yasar Khan
  *
  */
-public class TPGroup implements Comparable, Cloneable {
+public class EExclusiveGroup implements Comparable, Cloneable {
 	
 	private String groupID;
 	private String id;
@@ -35,11 +35,11 @@ public class TPGroup implements Comparable, Cloneable {
 	private ExprList filterExprList = new ExprList();
 	
 	
-	public TPGroup() {
+	public EExclusiveGroup() {
 		
 	}
 	
-	public TPGroup(String gID, String iD, List<Triple> tps, int c, List<String> projections, List<DataSource> datasources, Map<String, QueryVar> vMap, Set<String> vSet, ExprList filterExprs) {
+	public EExclusiveGroup(String gID, String iD, List<Triple> tps, int c, List<String> projections, List<DataSource> datasources, Map<String, QueryVar> vMap, Set<String> vSet, ExprList filterExprs) {
 		this.groupID = gID;
 		this.id = iD;
 		this.tpList = new ArrayList<Triple>(tps);
@@ -107,7 +107,7 @@ public class TPGroup implements Comparable, Cloneable {
 	
 	@Override
 	public int compareTo(Object o) {
-		int compareCost = ((TPGroup) o).getCost();
+		int compareCost = ((EExclusiveGroup) o).getCost();
 		
 		return this.cost-compareCost;
 	}
@@ -115,7 +115,7 @@ public class TPGroup implements Comparable, Cloneable {
 	
 	@Override
 	public Object clone() {
-		TPGroup subQuery = new TPGroup(groupID, id, tpList, cost, projectionList, datasourceList, varMap, varSet, filterExprList);
+		EExclusiveGroup subQuery = new EExclusiveGroup(groupID, id, tpList, cost, projectionList, datasourceList, varMap, varSet, filterExprList);
 		
 		return subQuery;
 	}

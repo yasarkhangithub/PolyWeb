@@ -10,7 +10,7 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.insight.sels.datasources.DataSource;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.queryservice.QueryService;
 import org.insight.sels.queryservice.QueryServiceFactory;
 import org.insight.sels.result.PolyQuerySolution;
@@ -56,8 +56,8 @@ public class QueryPlanExecution<T> {
 		/**
 		 * Get sub queries from both edges of the leaf join.
 		 */
-		TPGroup leftSubQuery = (TPGroup) leftArg.getArg();
-		TPGroup rightSubQuery = (TPGroup) rightArg.getArg();
+		EExclusiveGroup leftSubQuery = (EExclusiveGroup) leftArg.getArg();
+		EExclusiveGroup rightSubQuery = (EExclusiveGroup) rightArg.getArg();
 		List<String> leftSQProjList = leftSubQuery.getProjectionList();
 		List<String> rightSQProjList = rightSubQuery.getProjectionList();
 		
@@ -87,7 +87,7 @@ public class QueryPlanExecution<T> {
 			 * for each solution of the left sub query (leftSubQuery) edge of the join, create 
 			 * a right sub query (valuesSubQuery) having fixed values for the join variables
 			 */
-			TPGroup valuesSubQuery = getValuesSubQuery(joinVars, leftPolyQS, rightSubQuery);
+			EExclusiveGroup valuesSubQuery = getValuesSubQuery(joinVars, leftPolyQS, rightSubQuery);
 			
 			
 			/**
@@ -191,12 +191,12 @@ public class QueryPlanExecution<T> {
 			nextJoinPolyRes.setVarNames(nextJoinVarList);
 			nextJoinPolyRes.setQuerySolList(nextJoinPolyQSList);
 			
-			TPGroup subQuery = null;
+			EExclusiveGroup subQuery = null;
 			
 			if(nextLeftArg.getArgType().equals(JoinArg.QUERY_NODE))
-				subQuery = (TPGroup) nextLeftArg.getArg();
+				subQuery = (EExclusiveGroup) nextLeftArg.getArg();
 			else if(nextRightArg.getArgType().equals(JoinArg.QUERY_NODE))
-				subQuery = (TPGroup) nextRightArg.getArg();
+				subQuery = (EExclusiveGroup) nextRightArg.getArg();
 			
 			List<String> sqProjList = subQuery.getProjectionList();
 			List<String> joinProjList = joinPolyRes.getVarNames();
@@ -209,7 +209,7 @@ public class QueryPlanExecution<T> {
 				 * for each solution of the already joined results edge of the join, create 
 				 * a sub query (nextValuesSubQuery) having fixed values for the join variables
 				 */
-				TPGroup nextValuesSubQuery = getValuesSubQuery(nextJoinVars, joinPolyQS, subQuery);
+				EExclusiveGroup nextValuesSubQuery = getValuesSubQuery(nextJoinVars, joinPolyQS, subQuery);
 				
 				/**
 				 * Execute each of the nextValuesSubQuery
@@ -288,9 +288,9 @@ public class QueryPlanExecution<T> {
 	
 	
 	
-	private TPGroup getValuesSubQuery(List<String> joinVars, PolyQuerySolution polyQS, TPGroup rightSubQuery) {
+	private EExclusiveGroup getValuesSubQuery(List<String> joinVars, PolyQuerySolution polyQS, EExclusiveGroup rightSubQuery) {
 		
-		TPGroup valuesSubQuery = new TPGroup();
+		EExclusiveGroup valuesSubQuery = new EExclusiveGroup();
 		
 		for (String joinVar : joinVars) {
 			

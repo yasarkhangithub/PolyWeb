@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.insight.sels.datasources.DataSource;
+import org.insight.sels.querywriter.Operators;
 import org.insight.sels.stats.QueryExecutionStats;
 import org.insight.sels.util.DataSourceUtil;
 import org.insight.sels.util.FileUtility;
@@ -21,12 +22,14 @@ public class Config {
 	
 	private List<DataSource> dataSourceList;
 //	
-//	String datasourcesFilePath = "config/datasources.json";
+	String datasourcesFilePath = "config/datasources.json";
 //	String datasourcesFilePath = "config/datasources-rdf.json";
-	String datasourcesFilePath = "config/datasources-mysql-local.json";
-	private String queryPath = "config/queries/" + "QE-9";
+//	String datasourcesFilePath = "config/datasources-mysql-local.json";
+	private String queryPath = "config/queries/" + "QE-3";
 	
 	private QueryExecutionStats queryExecStats;
+	
+	private Operators operators = new Operators();
 	
 	/**
 	 * Constructor
@@ -66,6 +69,7 @@ public class Config {
 		
 		for (DataSource dataSource : dataSourceList) {
 			dataSource.generateSchema();
+			dataSource.predicateNullCheck();
 		}
 		
 		sparqlQuery.parseSPARQLQuery();
@@ -101,6 +105,16 @@ public class Config {
 
 	public void setQueryExecStats(QueryExecutionStats queryExecStats) {
 		this.queryExecStats = queryExecStats;
+	}
+
+
+	public Operators getOperators() {
+		return operators;
+	}
+
+
+	public void setOperators(Operators operators) {
+		this.operators = operators;
 	}
 
 	

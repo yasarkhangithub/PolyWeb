@@ -1,6 +1,8 @@
 package org.insight.sels.datasources;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Model;
@@ -25,6 +27,7 @@ public abstract class DataSource {
 	private Model mapperModel;
 	private List<String> defaultGraphList;
 	private Mapper mapper;
+	private Set<String> nullPredicates = new HashSet<String>();
 	
 	
 	public DataSource() {
@@ -36,6 +39,8 @@ public abstract class DataSource {
 	
 	
 	public abstract Boolean containPredicate(Node predicate);
+	
+	public abstract void predicateNullCheck();
 	
 	
 	public Integer getId() {
@@ -147,6 +152,16 @@ public abstract class DataSource {
 
 	public void setMapper(Mapper mapper) {
 		this.mapper = mapper;
+	}
+
+
+	public Set<String> getNullPredicates() {
+		return nullPredicates;
+	}
+
+
+	public void setNullPredicates(Set<String> nullPredicates) {
+		this.nullPredicates = nullPredicates;
 	}
 
 }

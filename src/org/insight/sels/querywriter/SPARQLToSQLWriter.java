@@ -66,7 +66,7 @@ import org.insight.sels.datasources.DataSource;
 import org.insight.sels.query.QueryVar;
 import org.insight.sels.query.SQLQuery;
 import org.insight.sels.query.SubQuery;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.rml.R2RMLMapper;
 import org.insight.sels.util.StringUtil;
 
@@ -77,14 +77,17 @@ import org.insight.sels.util.StringUtil;
  */
 public class SPARQLToSQLWriter {
 	
-	TPGroup subQuery = new TPGroup();
+	EExclusiveGroup subQuery = new EExclusiveGroup();
+	String filterString = "";
+	Operators operators = null;
 	
-	public SQLQuery rewriteQuery(TPGroup sq, DataSource datasource) {
+	public SQLQuery rewriteQuery(EExclusiveGroup sq, DataSource datasource) {
 
 //		System.out.println(sq.getTpList().toString());
 		subQuery = sq;
 		Config config = Config.getInstance();
 		List<String> mainQueryProjList = config.getSparqlQuery().getProjectionList();
+		operators = config.getOperators();
 
 		List<Triple> tripleList = subQuery.getTpList();
 		Map<String, QueryVar> varMap = subQuery.getVarMap();
@@ -317,30 +320,38 @@ public class SPARQLToSQLWriter {
 
 		}
 		
+		
+		
+		/**
+		 * Converting SPARQL Query Filters to SQL query Where Clause
+		 */
 		ExprList filterExprs = subQuery.getFilterExprList();
 		if(!filterExprs.isEmpty()) {
 			
 			for (Expr expr : filterExprs) {
-				Set<Var> exprVars = expr.getVarsMentioned();
-				String exprStr = expr.toString();
-//				System.out.println(exprStr);
-				for (Var exprVar : exprVars) {
-					QueryVar qvar = varMap.get(exprVar.getName());
-					if(qvar != null) {
-						String altVar = qvar.getAlternateNameList().get(0);
-						exprStr = exprStr.replace(exprVar.toString(), altVar);
-					} else {
-						exprStr = exprStr.replace("&& ( ?cnf > 30 )", "");
-//						System.out.println("After: " + exprStr);
-					}
-						
-					
-				}
+				
+				ExprFunction expFunc = expr.getFunction();
+				processFilter(expFunc, varMap);
+				
+//				Set<Var> exprVars = expr.getVarsMentioned();
+//				String exprStr = expr.toString();
+////				System.out.println(exprStr);
+//				for (Var exprVar : exprVars) {
+//					QueryVar qvar = varMap.get(exprVar.getName());
+//					if(qvar != null) {
+//						String altVar = qvar.getAlternateNameList().get(0);
+//						exprStr = exprStr.replace(exprVar.toString(), altVar);
+//					}
+//						
+//					
+//				}
 				
 				if(whereClause.isEmpty())
-					whereClause += " " + exprStr;
-				else
-					whereClause += " AND " + exprStr;
+					whereClause += " " + filterString;
+				else {
+					if(!filterString.isEmpty())
+						whereClause += " AND " + filterString;
+				}
 			}
 			
 //			System.out.println("Where ::::: " + whereClause);
@@ -354,6 +365,73 @@ public class SPARQLToSQLWriter {
 		sqlQuery.setWhereClause(whereClause);
 		
 		return sqlQuery;
+	}
+	
+	
+	
+	/**
+	 * This method transforms SPARQL Filter to SQL Where Clause
+	 * 
+	 * @param expFunc
+	 * @param varMap
+	 */
+	public void processFilter(ExprFunction expFunc, Map<String, QueryVar> varMap) {
+		
+		Set<String> queryVars = varMap.keySet();
+		
+		Expr arg1 = expFunc.getArg(1);
+		Expr arg2 = expFunc.getArg(2);
+		String op = expFunc.getOpName();
+		
+		if(!arg1.isFunction()) {
+			String expVar = arg1.toString();
+			String expValue = arg2.toString();
+			
+			if(queryVars.contains(expVar)) {
+				QueryVar qvar = varMap.get(expVar);
+				String altVar = qvar.getAlternateNameList().get(0);
+				filterString += "( " + altVar + " " + operators.getCSVOp(op) + " " + expValue + " ) ";
+			}
+			
+		} else {
+			
+			Boolean operatorFlag = Boolean.FALSE;
+			
+			ExprFunction arg1Func = arg1.getFunction();
+			Set<String> arg1Vars = arg1Func.getVarNamesMentioned();
+			
+			if(!Collections.disjoint(arg1Vars, queryVars)) {
+				
+				filterString += "( ";
+				processFilter(arg1Func, varMap);
+				
+				operatorFlag = Boolean.TRUE;
+				
+			}
+			
+			ExprFunction arg2Func = arg2.getFunction();
+			Set<String> arg2Vars = arg2Func.getVarNamesMentioned();
+			
+			if(!Collections.disjoint(arg2Vars, queryVars)) {
+				
+				if(operatorFlag) {
+					filterString += " " + operators.getCSVOp(op) + " ";
+				} else {
+					filterString += ")";
+				}
+				
+				processFilter(arg2Func, varMap);
+				filterString += ")";
+			} else {
+				if(operatorFlag) {
+					filterString += ")";
+				}
+			}
+			
+			
+			
+		}
+		
 	}
 	
 	

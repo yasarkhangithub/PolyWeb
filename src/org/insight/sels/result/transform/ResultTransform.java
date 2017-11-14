@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.insight.sels.query.QueryVar;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.result.PolyQuerySolution;
 
 /**
@@ -15,17 +15,17 @@ import org.insight.sels.result.PolyQuerySolution;
  */
 public abstract class ResultTransform {
 	
-	private TPGroup subQuery;
+	private EExclusiveGroup subQuery;
 	protected Map<String, QueryVar> varMap;
 	protected Set<String> varKeySet;
 	
 	public abstract PolyQuerySolution tranform(Object querySolution) throws SQLException;
 
-	public TPGroup getSubQuery() {
+	public EExclusiveGroup getSubQuery() {
 		return subQuery;
 	}
 
-	public void setSubQuery(TPGroup subQuery) {
+	public void setSubQuery(EExclusiveGroup subQuery) {
 		this.subQuery = subQuery;
 		this.setVarMap(subQuery.getVarMap());
 		this.setVarKeySet(getVarMap().keySet());

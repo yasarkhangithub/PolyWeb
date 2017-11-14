@@ -1,7 +1,7 @@
 package org.insight.sels.optimizer;
 
 import org.insight.sels.query.SubQuery;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 
 /**
  * 
@@ -38,7 +38,7 @@ public class JoinArg<T> {
 		String argString = "";
 		
 		if(argType.equals(QUERY_NODE)) {
-			TPGroup tpGroup = (TPGroup) arg;
+			EExclusiveGroup tpGroup = (EExclusiveGroup) arg;
 			argString += "Arg-" + tpGroup.getId();
 		} else {
 			FederatedJoin<T> fedJoin = (FederatedJoin<T>) arg;

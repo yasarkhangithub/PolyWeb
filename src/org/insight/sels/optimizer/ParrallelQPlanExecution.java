@@ -18,7 +18,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.insight.sels.datasources.DataSource;
 import org.insight.sels.query.QueryVar;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 import org.insight.sels.queryservice.QueryServiceFactory_New;
 import org.insight.sels.queryservice.QueryService_New;
 import org.insight.sels.result.PolyQuerySolution;
@@ -80,8 +80,8 @@ public class ParrallelQPlanExecution<T> {
 		/**
 		 * Get sub queries from both edges of the leaf join.
 		 */
-		TPGroup leftSubQuery = (TPGroup) leftArg.getArg();
-		TPGroup rightSubQuery = (TPGroup) rightArg.getArg();
+		EExclusiveGroup leftSubQuery = (EExclusiveGroup) leftArg.getArg();
+		EExclusiveGroup rightSubQuery = (EExclusiveGroup) rightArg.getArg();
 		List<String> projListL = leftSubQuery.getProjectionList();
 		List<String> projListR = rightSubQuery.getProjectionList();
 		
@@ -121,7 +121,7 @@ public class ParrallelQPlanExecution<T> {
 						/**
 						 * Parallel Execution of threads
 						 */
-//						TPGroup rightSubQueryClone = (TPGroup) rightSubQuery.clone();
+//						EExclusiveGroup rightSubQueryClone = (EExclusiveGroup) rightSubQuery.clone();
 						Runnable parallelTask = new ParallelTask(joinVars, polyQsL, rightSubQuery, varListLR, projListL, projListR, nextJoinId);
 						
 						try {
@@ -174,7 +174,7 @@ public class ParrallelQPlanExecution<T> {
 	 * @param datasource
 	 * @return
 	 */
-	public ResultSetWrapper executeSubQuery(TPGroup subQuery, DataSource datasource) {
+	public ResultSetWrapper executeSubQuery(EExclusiveGroup subQuery, DataSource datasource) {
 		String datasourceType = datasource.getType();
 		QueryService_New queryService = queryServiceFactory.getQueryService(datasourceType);
 		ResultSetWrapper resultSetWrapL = queryService.executeQuery(subQuery, datasource);
@@ -190,9 +190,9 @@ public class ParrallelQPlanExecution<T> {
 	 * @param rightSubQuery
 	 * @return
 	 */
-	private TPGroup getValuesSubQuery(List<String> joinVars, PolyQuerySolution polyQS, TPGroup rightSubQuery) {
+	private EExclusiveGroup getValuesSubQuery(List<String> joinVars, PolyQuerySolution polyQS, EExclusiveGroup rightSubQuery) {
 		
-		TPGroup valuesSubQuery = new TPGroup();
+		EExclusiveGroup valuesSubQuery = new EExclusiveGroup();
 		
 		for (String joinVar : joinVars) {
 			
@@ -268,12 +268,12 @@ public class ParrallelQPlanExecution<T> {
 				 */
 				List<String> nextJoinVarList = new ArrayList<String>();
 				
-				TPGroup subQuery = null;
+				EExclusiveGroup subQuery = null;
 				
 				if(nextLeftArg.getArgType().equals(JoinArg.QUERY_NODE))
-					subQuery = (TPGroup) nextLeftArg.getArg();
+					subQuery = (EExclusiveGroup) nextLeftArg.getArg();
 				else if(nextRightArg.getArgType().equals(JoinArg.QUERY_NODE))
-					subQuery = (TPGroup) nextRightArg.getArg();
+					subQuery = (EExclusiveGroup) nextRightArg.getArg();
 				
 				List<String> sqProjList = subQuery.getProjectionList();
 				List<String> joinProjList = polyQs.getVarList();
@@ -282,7 +282,7 @@ public class ParrallelQPlanExecution<T> {
 				 * for each solution of the already joined results edge of the join, create 
 				 * a sub query (nextValuesSubQuery) having fixed values for the join variables
 				 */
-				TPGroup nextValuesSubQuery = getValuesSubQuery(nextJoinVars, polyQs, subQuery);
+				EExclusiveGroup nextValuesSubQuery = getValuesSubQuery(nextJoinVars, polyQs, subQuery);
 				List<DataSource> nextValuesSqDsList = nextValuesSubQuery.getDatasourceList();
 				ExecutorService unionService2 = Executors.newFixedThreadPool(nextValuesSqDsList.size());
 				for (DataSource dataSource : nextValuesSqDsList) {
@@ -363,7 +363,7 @@ public class ParrallelQPlanExecution<T> {
 
 		List<String> joinVars;
 		PolyQuerySolution polyQsL;
-		TPGroup rightSubQuery;
+		EExclusiveGroup rightSubQuery;
 		List<String> varListLR;
 		List<String> projListL;
 		List<String> projListR;
@@ -372,7 +372,7 @@ public class ParrallelQPlanExecution<T> {
 		List<PolyQuerySolution> polyqsList = new ArrayList<PolyQuerySolution>();
 		
 		
-		public ParallelTask(List<String> joinVars, PolyQuerySolution polyQsL, TPGroup rightSubQuery, List<String> varListLR, List<String> projListL, List<String> projListR, Integer nextJoinId) {
+		public ParallelTask(List<String> joinVars, PolyQuerySolution polyQsL, EExclusiveGroup rightSubQuery, List<String> varListLR, List<String> projListL, List<String> projListR, Integer nextJoinId) {
 			this.joinVars = joinVars;
 			this.polyQsL = polyQsL;
 			this.rightSubQuery = rightSubQuery;
@@ -390,7 +390,7 @@ public class ParrallelQPlanExecution<T> {
 			 * for each solution of the left sub query (leftSubQuery) edge of the join, create 
 			 * a right sub query (valuesSubQuery) having fixed values for the join variables
 			 */
-			TPGroup valuesSubQuery = getValuesSubQuery(joinVars, polyQsL, rightSubQuery);
+			EExclusiveGroup valuesSubQuery = getValuesSubQuery(joinVars, polyQsL, rightSubQuery);
 			
 			/**
 			 * Execute each of the valuesSubQuery

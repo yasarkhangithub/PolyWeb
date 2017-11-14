@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.insight.sels.query.SubQuery;
-import org.insight.sels.query.TPGroup;
+import org.insight.sels.query.EExclusiveGroup;
 
 /**
  * 
@@ -41,13 +41,13 @@ public class FederatedJoin<T> {
 	public Boolean hasArg(JoinArg<T> joinArg) {
 		Boolean isArg = Boolean.FALSE;
 		
-		String tpGroupId = ( (TPGroup) joinArg.getArg()).getId();
+		String tpGroupId = ( (EExclusiveGroup) joinArg.getArg()).getId();
 		
 		JoinArg<T> leftArg = getJoinArgLeft();
 		JoinArg<T> rightArg = getJoinArgRight();
 		
 		if(leftArg.getArgType().equals(JoinArg.QUERY_NODE)) {
-			TPGroup leftTPGroup = (TPGroup) leftArg.getArg();
+			EExclusiveGroup leftTPGroup = (EExclusiveGroup) leftArg.getArg();
 			
 			if(leftTPGroup.getId().equals(tpGroupId)) {
 				isArg = true;
@@ -55,7 +55,7 @@ public class FederatedJoin<T> {
 		}
 		
 		if(rightArg.getArgType().equals(JoinArg.QUERY_NODE)) {
-			TPGroup rightTPGroup = (TPGroup) rightArg.getArg();
+			EExclusiveGroup rightTPGroup = (EExclusiveGroup) rightArg.getArg();
 			
 			if(rightTPGroup.getId().equals(tpGroupId)) {
 				isArg = true;
