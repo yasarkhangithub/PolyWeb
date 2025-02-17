@@ -1,0 +1,14 @@
+PREFIX gs: <http://sels.insight.org/cancer-genomics/schema/>
+
+SELECT DISTINCT ?cnv ?chr ?start ?end
+
+WHERE { 
+	?cnv gs:chr ?chr .
+	?cnv gs:chromosome_region "12p12.1" .
+	?cnv gs:start ?start .
+	?cnv gs:end ?end .
+	?cnv gs:mutation_type "gain" .
+	#?cnv gs:disease "Breast cancer".
+	
+	#Filter ( ?start >= 24255525 && ?start <= 45256523 )
+}

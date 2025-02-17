@@ -1,0 +1,8 @@
+PREFIX gs: <http://sels.insight.org/cancer-genomics/schema/>
+
+SELECT DISTINCT ?cnv ?p_site
+
+WHERE { 
+	?cnv gs:gene <http://sels.insight.org/cancer-genomics/gene/ATP2A1>.
+	?cnv gs:primary_Site ?p_site.
+}

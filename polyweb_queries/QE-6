@@ -1,0 +1,17 @@
+PREFIX gs: <http://sels.insight.org/cancer-genomics/schema/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?cnv ?chr ?start ?end ?sample ?disease ?psite ?segment_mean
+ 
+WHERE { 
+	?cnv a gs:CNV . 
+	?cnv gs:chr ?chr .
+	?cnv gs:start ?start . 
+	?cnv gs:end ?end .
+	?cnv gs:sample ?sample .
+	?cnv gs:gene <http://sels.insight.org/cancer-genomics/gene/DUSP22> .
+	?cnv gs:disease ?disease .
+	?cnv gs:primary_Site ?psite .
+	?cnv gs:segment_mean ?segment_mean .
+	
+}
