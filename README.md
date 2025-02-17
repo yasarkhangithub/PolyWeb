@@ -30,7 +30,7 @@ Each RDF dataset was loaded into a different Virtuoso (Open Source v.7.2.4.2) SP
 ### Queries
 A total of 10 queries are designed to evaluate and compare the query federation performance of PolyWeb against FedX and HiBISCuS based on the metrics defined.
 
-Queries used in evaluation experiments of PolyWeb can be downloaded from [PolyWeb Queries](https://goo.gl/LQG7Qb). 
+Queries used in evaluation experiments of PolyWeb can be downloaded from [PolyWeb Queries](https://github.com/yasarkhangithub/PolyWeb/tree/master/polyweb_queries) or [PolyWeb Queries Drive](https://goo.gl/LQG7Qb). 
 
 ### Comparison Metrics
 For each query type we measured (1) the number of sources selected; (2) the average source selection time; (3) the average query execution time;  and (4) the number of results returned to assess result completeness relatively. The performance of PolyWeb, FedX and HiBISCuS are compared based on these metrics.
